@@ -47,6 +47,8 @@ func generate(w io.Writer, pkg string, stmts []*statement) error {
 var text = `
 package {{ .Package }}
 
+// THIS FILE WAS AUTO-GENERATED. DO NOT MODIFY.
+
 // Lookup returns the named statement.
 func Lookup(name string) (string) {
    return index[name]
