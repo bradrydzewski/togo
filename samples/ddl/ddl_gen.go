@@ -2,7 +2,6 @@ package migrate
 
 import (
 	"database/sql"
-	"log"
 )
 
 var migrations = []struct {
@@ -38,19 +37,15 @@ func Migrate(db *sql.DB) error {
 	for _, migration := range migrations {
 		_, ok := completed[migration.name]
 		if ok {
-			debug("migration skipped: %s", migration.name)
 			continue
 		}
 		for _, stmt := range migration.stmt {
-			info("migration started: %s", migration.name)
-
 			if _, err := db.Exec(stmt); err != nil {
 				return err
 			}
 			if err := insertMigration(db, migration.name); err != nil {
 				return err
 			}
-			info("migration finished: %s", migration.name)
 		}
 	}
 	return nil
@@ -81,18 +76,6 @@ func selectCompleted(db *sql.DB) (map[string]struct{}, error) {
 		migrations[name] = struct{}{}
 	}
 	return migrations, nil
-}
-
-//
-// logging functions
-//
-
-func debug(message string, params ...interface{}) {
-	log.Printf("migration: debug: "+message, params...)
-}
-
-func info(message string, params ...interface{}) {
-	log.Printf("migration: info: "+message, params...)
 }
 
 //

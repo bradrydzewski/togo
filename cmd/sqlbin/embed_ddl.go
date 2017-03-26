@@ -27,14 +27,14 @@ type migrationParams struct {
 	Logger     logger
 }
 
-var migrateCommand = cli.Command{
-	Name:   "migrate",
-	Usage:  "generate the migration",
-	Action: migrateAction,
+var ddlCommand = cli.Command{
+	Name:   "ddl",
+	Usage:  "embed ddl statements",
+	Action: ddlAction,
 	Flags: []cli.Flag{
 		cli.StringFlag{
 			Name:  "package",
-			Value: "migrate",
+			Value: "ddl",
 		},
 		cli.StringFlag{
 			Name:  "dialect",
@@ -58,7 +58,7 @@ var migrateCommand = cli.Command{
 	},
 }
 
-func migrateAction(c *cli.Context) error {
+func ddlAction(c *cli.Context) error {
 	pattern := c.Args().First()
 	if pattern == "" {
 		pattern = c.String("input")
@@ -100,5 +100,5 @@ func migrateAction(c *cli.Context) error {
 		defer wr.Close()
 	}
 
-	return template.Execute(wr, "migrate.tmpl", params)
+	return template.Execute(wr, "ddl.tmpl", params)
 }

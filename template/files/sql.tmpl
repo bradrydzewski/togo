@@ -1,0 +1,18 @@
+package {{ .Package }}
+
+// Lookup returns the named statement.
+func Lookup(name string) string {
+	return index[name]
+}
+
+var index = map[string]string{
+	{{- range .Statements -}}
+	{{ printf "%q" .Name }}: {{ camelize .Name }},
+	{{ end -}}
+}
+
+{{ range .Statements }}
+var {{ camelize .Name }} = `
+{{ .Value }}
+`
+{{ end }}

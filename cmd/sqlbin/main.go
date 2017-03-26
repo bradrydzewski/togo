@@ -12,9 +12,9 @@ func main() {
 	app.Name = "sqlbin"
 	app.Usage = "sqlbin provides command line tools for generating embedded sql opterations"
 	app.Commands = []cli.Command{
-		migrateCommand,
+		ddlCommand,
+		sqlCommand,
 	}
-
 	if err := app.Run(os.Args); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
