@@ -1,0 +1,104 @@
+package main
+
+import (
+	"os"
+	"path/filepath"
+
+	"github.com/urfave/cli"
+
+	"github.com/bradrydzewski/sqlbin/parse"
+	"github.com/bradrydzewski/sqlbin/template"
+)
+
+type migration struct {
+	Name       string
+	Statements []*parse.Statement
+}
+
+type logger struct {
+	Enabled bool
+	Package string
+}
+
+type migrationParams struct {
+	Package    string
+	Dialect    string
+	Migrations []migration
+	Logger     logger
+}
+
+var migrateCommand = cli.Command{
+	Name:   "migrate",
+	Usage:  "generate the migration",
+	Action: migrateAction,
+	Flags: []cli.Flag{
+		cli.StringFlag{
+			Name:  "package",
+			Value: "migrate",
+		},
+		cli.StringFlag{
+			Name:  "dialect",
+			Value: "sqlite3",
+		},
+		cli.StringFlag{
+			Name:  "input",
+			Value: "files/*.sql",
+		},
+		cli.StringFlag{
+			Name:  "output",
+			Value: "migrate.go",
+		},
+		cli.BoolFlag{
+			Name: "log",
+		},
+		cli.StringFlag{
+			Name:  "logger",
+			Value: "log", // log, logrus
+		},
+	},
+}
+
+func migrateAction(c *cli.Context) error {
+	pattern := c.Args().First()
+	if pattern == "" {
+		pattern = c.String("input")
+	}
+
+	matches, err := filepath.Glob(pattern)
+	if err != nil {
+		return err
+	}
+
+	params := migrationParams{
+		Package: c.String("package"),
+		Dialect: c.String("dialect"),
+		Logger: logger{
+			Enabled: c.Bool("log"),
+			Package: c.String("logger"),
+		},
+	}
+
+	parser := parse.New()
+	for _, match := range matches {
+		statements, perr := parser.ParseFile(match)
+		if perr != nil {
+			return perr
+		}
+		_, filename := filepath.Split(match)
+		params.Migrations = append(params.Migrations, migration{
+			Name:       filename,
+			Statements: statements,
+		})
+	}
+
+	wr := os.Stdout
+	if output := c.String("output"); output != "-" {
+		wr, err = os.Create(output)
+		if err != nil {
+			return err
+		}
+		defer wr.Close()
+	}
+
+	return template.Execute(wr, "migrate.tmpl", params)
+}
