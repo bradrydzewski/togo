@@ -6,14 +6,14 @@ import (
 
 	"github.com/urfave/cli"
 
-	"github.com/bradrydzewski/sqlbin/parse"
+	"github.com/bradrydzewski/sqlbin/parser"
 	"github.com/bradrydzewski/sqlbin/template"
 )
 
 type sqlParams struct {
 	Package    string
 	Dialect    string
-	Statements []*parse.Statement
+	Statements []*parser.Statement
 }
 
 var sqlCommand = cli.Command{
@@ -56,9 +56,9 @@ func sqlAction(c *cli.Context) error {
 		Dialect: c.String("dialect"),
 	}
 
-	parser := parse.New()
+	parse := parser.New()
 	for _, match := range matches {
-		statements, perr := parser.ParseFile(match)
+		statements, perr := parse.ParseFile(match)
 		if perr != nil {
 			return perr
 		}

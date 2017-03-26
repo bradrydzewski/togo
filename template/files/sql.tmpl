@@ -6,7 +6,7 @@ func Lookup(name string) string {
 }
 
 var index = map[string]string{
-	{{- range .Statements -}}
+	{{ range .Statements -}}
 	{{ printf "%q" .Name }}: {{ camelize .Name }},
 	{{ end -}}
 }

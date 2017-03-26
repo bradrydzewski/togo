@@ -6,13 +6,13 @@ import (
 
 	"github.com/urfave/cli"
 
-	"github.com/bradrydzewski/sqlbin/parse"
+	"github.com/bradrydzewski/sqlbin/parser"
 	"github.com/bradrydzewski/sqlbin/template"
 )
 
 type migration struct {
 	Name       string
-	Statements []*parse.Statement
+	Statements []*parser.Statement
 }
 
 type logger struct {
@@ -78,9 +78,9 @@ func ddlAction(c *cli.Context) error {
 		},
 	}
 
-	parser := parse.New()
+	parse := parser.New()
 	for _, match := range matches {
-		statements, perr := parser.ParseFile(match)
+		statements, perr := parse.ParseFile(match)
 		if perr != nil {
 			return perr
 		}

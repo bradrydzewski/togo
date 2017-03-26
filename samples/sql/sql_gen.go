@@ -5,7 +5,8 @@ func Lookup(name string) string {
 	return index[name]
 }
 
-var index = map[string]string{"user-select-all": userSelectAll,
+var index = map[string]string{
+	"user-select-all":      userSelectAll,
 	"user-select-username": userSelectUsername,
 }
 
