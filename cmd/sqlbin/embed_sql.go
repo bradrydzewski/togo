@@ -74,5 +74,5 @@ func sqlAction(c *cli.Context) error {
 		defer wr.Close()
 	}
 
-	return template.Execute(wr, "files/sql.tmpl", params)
+	return template.Execute(wr, "sql.tmpl", params)
 }

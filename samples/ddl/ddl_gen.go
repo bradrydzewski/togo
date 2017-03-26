@@ -1,4 +1,4 @@
-package migrate
+package ddl
 
 import (
 	"database/sql"

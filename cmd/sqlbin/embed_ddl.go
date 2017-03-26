@@ -46,7 +46,7 @@ var ddlCommand = cli.Command{
 		},
 		cli.StringFlag{
 			Name:  "output",
-			Value: "migrate.go",
+			Value: "ddl_gen.go",
 		},
 		cli.BoolFlag{
 			Name: "log",
