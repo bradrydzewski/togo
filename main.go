@@ -10,8 +10,9 @@ import (
 func main() {
 	app := cli.NewApp()
 	app.Name = "sqlbin"
-	app.Usage = "sqlbin provides command line tools for generating embedded sql opterations"
-	app.Version = "1.0.0-alpha"
+	app.Usage = "sqlbin provides too for embedding sql opterations in your binary"
+	app.Version = "1.0.0"
+	app.Author = "bradrydzewski"
 	app.Commands = []cli.Command{
 		ddlCommand,
 		sqlCommand,
