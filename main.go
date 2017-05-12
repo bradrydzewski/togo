@@ -16,6 +16,7 @@ func main() {
 	app.Commands = []cli.Command{
 		ddlCommand,
 		sqlCommand,
+		httpCommand,
 		tmplCommand,
 	}
 	if err := app.Run(os.Args); err != nil {

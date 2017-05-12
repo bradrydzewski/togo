@@ -39,11 +39,11 @@ func init() {
 
 {{ range .Files }}
 // {{ .Path }}
-{{ if $encoded }}
+{{ if $encoded -}}
 var {{ .Base | camelize }} = []byte{
 {{ .Data | hexdump }}
 }
-{{ else }}
+{{ else -}}
 var {{ .Base | camelize }} = `{{ .Data }}`
 {{ end }}
 {{ end }}
