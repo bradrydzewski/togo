@@ -9,13 +9,14 @@ import (
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "sqlbin"
-	app.Usage = "sqlbin provides too for embedding sql opterations in your binary"
+	app.Name = "togo"
+	app.Usage = "togo provides tools to convert files to go"
 	app.Version = "1.0.0"
 	app.Author = "bradrydzewski"
 	app.Commands = []cli.Command{
 		ddlCommand,
 		sqlCommand,
+		tmplCommand,
 	}
 	if err := app.Run(os.Args); err != nil {
 		fmt.Println(err)

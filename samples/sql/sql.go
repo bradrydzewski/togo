@@ -1,3 +1,3 @@
 package sql
 
-//go:generate sqlbin sql
+//go:generate togo sql

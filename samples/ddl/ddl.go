@@ -1,3 +1,3 @@
 package ddl
 
-//go:generate sqlbin ddl
+//go:generate togo ddl

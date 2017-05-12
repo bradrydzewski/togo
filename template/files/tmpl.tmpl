@@ -1,0 +1,49 @@
+package {{ .Package }}
+
+import "{{ .Format }}/template"
+
+{{- $encoded := .Encode }}
+
+// list of embedded template files.
+var files = []struct{
+	name string
+	data string
+} {
+	{{ range .Files -}}
+	{
+		name: {{ printf "%q" .Name }},
+		{{ if $encoded -}}
+		data: string({{ .Base | camelize }}),
+		{{- else -}}
+		data: {{ .Base | camelize }},
+		{{- end }}
+	},
+	{{- end }}
+}
+
+// T exposes the embedded templates.
+var T *template.Template
+
+func init() {
+	T = template.New("_"){{ if .Funcs }}.Funcs({{ .Funcs }}){{ end }}
+	for _, file := range files {
+		T = template.Must(
+			T.New(file.name).Parse(file.data),
+		)
+	}
+}
+
+//
+// embedded template files.
+//
+
+{{ range .Files }}
+// {{ .Path }}
+{{ if $encoded }}
+var {{ .Base | camelize }} = []byte{
+{{ .Data | hexdump }}
+}
+{{ else }}
+var {{ .Base | camelize }} = `{{ .Data }}`
+{{ end }}
+{{ end }}

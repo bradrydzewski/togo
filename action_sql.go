@@ -6,8 +6,8 @@ import (
 
 	"github.com/urfave/cli"
 
-	"github.com/bradrydzewski/sqlbin/parser"
-	"github.com/bradrydzewski/sqlbin/template"
+	"github.com/bradrydzewski/togo/parser"
+	"github.com/bradrydzewski/togo/template"
 )
 
 type sqlParams struct {
@@ -66,7 +66,7 @@ func sqlAction(c *cli.Context) error {
 	}
 
 	wr := os.Stdout
-	if output := c.String("output"); output != "-" {
+	if output := c.String("output"); output != "" {
 		wr, err = os.Create(output)
 		if err != nil {
 			return err
