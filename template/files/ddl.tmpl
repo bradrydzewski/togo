@@ -9,17 +9,15 @@ import (
 
 var migrations = []struct {
 	name string
-	stmt []string
+	stmt string
 }{
 	{{- range .Migrations }}
+	{{- range .Statements }}
 	{
 		name: {{ printf "%q" .Name }},
-		stmt: []string{
-			{{- range .Statements }}
-			{{ camelize .Name }},
-			{{- end }}
-		},
+		stmt: {{ camelize .Name }},
 	},
+	{{- end }}
 	{{- end }}
 }
 
@@ -34,29 +32,24 @@ func Migrate(db *sql.DB) error {
 		return err
 	}
 	for _, migration := range migrations {
-		_, ok := completed[migration.name]
-		if ok {
-			{{- if .Logger.Enabled }}
+		if _, ok := completed[migration.name]; ok {
+			{{ if .Logger.Enabled }}
 			debug("migration skipped: %s", migration.name)
-			{{- end }}
+			{{ end }}
 			continue
 		}
-		for _, stmt := range migration.stmt {
-			{{- if .Logger.Enabled }}
-			info("migration started: %s", migration.name)
-
-			{{ end -}}
-			if _, err := db.Exec(stmt); err != nil {
-				return err
-			}
-
-			{{- if .Logger.Enabled }}
-			info("migration finished: %s", migration.name)
-			{{- end }}
+		{{ if .Logger.Enabled }}
+		info("migration started: %s", migration.name)
+		{{ end }}
+		if _, err := db.Exec(migration.stmt); err != nil {
+			return err
 		}
 		if err := insertMigration(db, migration.name); err != nil {
 			return err
 		}
+		{{ if .Logger.Enabled }}
+		info("migration finished: %s", migration.name)
+		{{ end }}
 	}
 	return nil
 }
