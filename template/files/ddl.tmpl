@@ -49,13 +49,13 @@ func Migrate(db *sql.DB) error {
 			if _, err := db.Exec(stmt); err != nil {
 				return err
 			}
-			if err := insertMigration(db, migration.name); err != nil {
-				return err
-			}
 
 			{{- if .Logger.Enabled }}
 			info("migration finished: %s", migration.name)
 			{{- end }}
+		}
+		if err := insertMigration(db, migration.name); err != nil {
+			return err
 		}
 	}
 	return nil
