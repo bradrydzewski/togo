@@ -1,18 +1,39 @@
 package main
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
+	"github.com/bmatcuk/doublestar"
 	"github.com/urfave/cli"
 
 	"github.com/bradrydzewski/togo/template"
 )
 
+type (
+	httpParams struct {
+		Encode  bool
+		Package string
+		Files   []*httpFile
+	}
+	httpFile struct {
+		Base    string
+		Name    string
+		Path    string
+		Ext     string
+		Data    string
+		Size    int64
+		Time    int64
+		Encoded bool
+	}
+)
+
 var httpCommand = cli.Command{
 	Name:   "http",
 	Usage:  "generate an http filesystem",
-	Action: tmplAction,
+	Action: httpAction,
 	Flags: []cli.Flag{
 		cli.StringFlag{
 			Name:  "package",
@@ -43,13 +64,55 @@ func httpAction(c *cli.Context) error {
 		pattern = c.String("input")
 	}
 
-	matches, err := filepath.Glob(pattern)
+	matches, err := doublestar.Glob(pattern)
 	if err != nil {
 		return err
 	}
 
-	for _ = range matches {
+	params := httpParams{
+		Encode:  c.Bool("encode"),
+		Package: c.String("package"),
+	}
 
+	prefix := c.String("trim-prefix")
+
+	for _, match := range matches {
+		stat, oserr := os.Stat(match)
+		if oserr != nil {
+			return oserr
+		}
+		if stat.IsDir() {
+			continue
+		}
+		raw, ioerr := ioutil.ReadFile(match)
+		if ioerr != nil {
+			return ioerr
+		}
+		encoded := true
+		switch {
+		case strings.HasSuffix(match, ".min.js"):
+		case strings.HasSuffix(match, ".min.css"):
+		case strings.HasSuffix(match, ".css"):
+			encoded = false
+		case strings.HasSuffix(match, ".js"):
+			encoded = false
+		case strings.HasSuffix(match, ".html"):
+			encoded = false
+		}
+		data := string(raw)
+		if !encoded {
+			data = strings.Replace(data, "`", "`+\"`\"+`", -1)
+		}
+		params.Files = append(params.Files, &httpFile{
+			Path:    strings.TrimPrefix(match, prefix),
+			Name:    filepath.Base(match),
+			Base:    strings.TrimSuffix(filepath.Base(match), filepath.Ext(match)),
+			Ext:     filepath.Ext(match),
+			Data:    data,
+			Time:    stat.ModTime().Unix(),
+			Size:    stat.Size(),
+			Encoded: encoded,
+		})
 	}
 
 	wr := os.Stdout
@@ -61,5 +124,5 @@ func httpAction(c *cli.Context) error {
 		defer wr.Close()
 	}
 
-	return template.Execute(wr, "http.tmpl", nil)
+	return template.Execute(wr, "http.tmpl", &params)
 }
