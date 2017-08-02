@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/bmatcuk/doublestar"
@@ -48,6 +49,9 @@ var httpCommand = cli.Command{
 			Value: "http_gen.go",
 		},
 		cli.StringFlag{
+			Name: "exclude",
+		},
+		cli.StringFlag{
 			Name:  "trim-prefix",
 			Value: "files",
 		},
@@ -74,7 +78,14 @@ func httpAction(c *cli.Context) error {
 		Package: c.String("package"),
 	}
 
-	prefix := c.String("trim-prefix")
+	var (
+		prefix  = c.String("trim-prefix")
+		exclude *regexp.Regexp
+	)
+
+	if s := c.String("exclude"); s != "" {
+		exclude = regexp.MustCompilePOSIX(s)
+	}
 
 	for _, match := range matches {
 		stat, oserr := os.Stat(match)
@@ -84,6 +95,10 @@ func httpAction(c *cli.Context) error {
 		if stat.IsDir() {
 			continue
 		}
+		if exclude != nil && exclude.MatchString(match) {
+			continue
+		}
+
 		raw, ioerr := ioutil.ReadFile(match)
 		if ioerr != nil {
 			return ioerr
