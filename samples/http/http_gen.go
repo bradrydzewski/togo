@@ -111,25 +111,37 @@ func (f *httpFile) Close() error {
 // New returns an embedded http.FileSystem
 func New() http.FileSystem {
 	return &fileSystem{
-		files: map[string]file{
-			"/js/padstart.js": {
-				data: file0,
-				FileInfo: &fileInfo{
-					name:    "padstart.js",
-					size:    577,
-					modTime: time.Unix(1500181749, 0),
-				},
-			},
-			"/leftpad.js": {
-				data: file1,
-				FileInfo: &fileInfo{
-					name:    "leftpad.js",
-					size:    288,
-					modTime: time.Unix(1500174523, 0),
-				},
-			},
-		},
+		files: files,
 	}
+}
+
+// Lookup returns the file at the specified path
+func Lookup(path string) ([]byte, error) {
+	f, ok := files[path]
+	if !ok {
+		return nil, os.ErrNotExist
+	}
+	return f.data, nil
+}
+
+// Index of all files
+var files = map[string]file{
+	"/js/padstart.js": {
+		data: file0,
+		FileInfo: &fileInfo{
+			name:    "padstart.js",
+			size:    577,
+			modTime: time.Unix(1500181749, 0),
+		},
+	},
+	"/leftpad.js": {
+		data: file1,
+		FileInfo: &fileInfo{
+			name:    "leftpad.js",
+			size:    288,
+			modTime: time.Unix(1500174523, 0),
+		},
+	},
 }
 
 //

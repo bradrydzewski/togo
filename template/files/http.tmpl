@@ -124,6 +124,16 @@ func Lookup(path string) ([]byte, error) {
 	return f.data, nil
 }
 
+// MustLookup returns the file at the specified path
+// and panics if the file is not found.
+func MustLookup(path string) ([]byte) {
+	d, err := Lookup(path)
+	if err != nil {
+		panic(err)
+	}
+	return d
+}
+
 // Index of all files
 var files = map[string]file{
 	{{ range $index, $file := .Files -}}

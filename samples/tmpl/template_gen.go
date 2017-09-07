@@ -33,7 +33,6 @@ func init() {
 //
 
 // files/en.tmpl
-
 var en = `<html>
 <body>
 Hello world
@@ -42,7 +41,6 @@ Hello world
 `
 
 // files/es.tmpl
-
 var es = `<html>
 <body>
 Hola Mundo

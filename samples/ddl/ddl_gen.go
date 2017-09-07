@@ -6,21 +6,23 @@ import (
 
 var migrations = []struct {
 	name string
-	stmt []string
+	stmt string
 }{
 	{
-		name: "01_init.sql",
-		stmt: []string{
-			createTableUser,
-			createIndexUsername,
-		},
+		name: "create-table-user",
+		stmt: createTableUser,
 	},
 	{
-		name: "02.sql",
-		stmt: []string{
-			addColumnUserEmail,
-			createIndexEmail,
-		},
+		name: "create-index-username",
+		stmt: createIndexUsername,
+	},
+	{
+		name: "add-column-user-email",
+		stmt: addColumnUserEmail,
+	},
+	{
+		name: "create-index-email",
+		stmt: createIndexEmail,
 	},
 }
 
@@ -35,18 +37,18 @@ func Migrate(db *sql.DB) error {
 		return err
 	}
 	for _, migration := range migrations {
-		_, ok := completed[migration.name]
-		if ok {
+		if _, ok := completed[migration.name]; ok {
+
 			continue
 		}
-		for _, stmt := range migration.stmt {
-			if _, err := db.Exec(stmt); err != nil {
-				return err
-			}
-			if err := insertMigration(db, migration.name); err != nil {
-				return err
-			}
+
+		if _, err := db.Exec(migration.stmt); err != nil {
+			return err
 		}
+		if err := insertMigration(db, migration.name); err != nil {
+			return err
+		}
+
 	}
 	return nil
 }
@@ -84,7 +86,7 @@ func selectCompleted(db *sql.DB) (map[string]struct{}, error) {
 
 var migrationTableCreate = `
 CREATE TABLE IF NOT EXISTS migrations (
- name VARCHAR(512)
+ name VARCHAR(255)
 ,UNIQUE(name)
 )
 `
