@@ -111,19 +111,31 @@ func (f *httpFile) Close() error {
 // New returns an embedded http.FileSystem
 func New() http.FileSystem {
 	return &fileSystem{
-		files: map[string]file{
-			{{ range $index, $file := .Files -}}
-			{{ printf "%q" $file.Path }}: {
-				data: file{{ $index }},
-				FileInfo: &fileInfo{
-					name:    {{ printf "%q" $file.Name }},
-					size:    {{ $file.Size }},
-					modTime: time.Unix({{ $file.Time }}, 0),
-				},
-			},
-			{{ end }}
-		},
+		files: files,
 	}
+}
+
+// Lookup returns the file at the specified path
+func Lookup(path string) ([]byte, error) {
+	f, ok := files[path]
+	if !ok {
+		return nil, os.ErrNotExist
+	}
+	return f.data, nil
+}
+
+// Index of all files
+var files = map[string]file{
+	{{ range $index, $file := .Files -}}
+	{{ printf "%q" $file.Path }}: {
+		data: file{{ $index }},
+		FileInfo: &fileInfo{
+			name:    {{ printf "%q" $file.Name }},
+			size:    {{ $file.Size }},
+			modTime: time.Unix({{ $file.Time }}, 0),
+		},
+	},
+	{{ end }}
 }
 
 //
