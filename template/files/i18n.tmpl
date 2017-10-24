@@ -1,0 +1,31 @@
+package {{ .Package }}
+
+import "github.com/nicksnyder/go-i18n/i18n"
+
+// list of embedded template files.
+var files = []struct{
+	name string
+	data string
+} {
+	{{ range .Files -}}
+	{
+		name: {{ printf "%q" .Name }},
+		data: {{ .Base | camelize }},
+	},
+	{{- end }}
+}
+
+func init() {
+	for _, file := range files {
+		i18n.ParseTranslationFileBytes(file.Name, []byte(file.data))
+	}
+}
+
+//
+// embedded template files.
+//
+
+{{ range .Files }}
+// {{ .Path }}
+var {{ .Base | camelize }} = `{{ .Data }}`
+{{ end }}

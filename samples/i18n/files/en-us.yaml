@@ -1,0 +1,5 @@
+- id: greeting
+  translation: Hello
+
+- id: welcome
+  translation: Welcome

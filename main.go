@@ -18,6 +18,7 @@ func main() {
 		sqlCommand,
 		httpCommand,
 		tmplCommand,
+		i18nCommand,
 	}
 	if err := app.Run(os.Args); err != nil {
 		fmt.Println(err)
