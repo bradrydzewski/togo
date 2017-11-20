@@ -1,0 +1,65 @@
+package {{ .Package }}
+
+import (
+	"io"
+	"net/http"
+	"net/http/httptest"
+)
+
+// NewServer starts a new mock http.Server using the test data.
+func NewServer() *httptest.Server {
+	return httptest.NewServer(
+		http.HandlerFunc(router),
+	)
+}
+
+func router(w http.ResponseWriter, r *http.Request) {
+	for _, route := range routes {
+		if route.Method == r.Method && route.Path == r.URL.Path {
+			w.WriteHeader(route.Status)
+			route.Header.Write(w)
+			io.WriteString(w, route.Body)
+			break
+		}
+	}
+}
+
+var routes = []struct {
+	Method string
+	Path   string
+	Body   string
+	Status int
+	Header http.Header
+}{
+    {{ range $index, $route := .Routes }}
+	// {{ $route.Method }} {{ $route.Path }}
+	{
+		Method: {{ printf "%q" $route.Method }},
+		Path:   {{ printf "%q" $route.Path }},
+		Status: {{ $route.Status }},
+		{{ if $route.Body -}}
+		Body:   {{ printf "%q" $route.Body }},
+		{{ end -}}
+		Header: map[string][]string{
+			{{ range $key, $value := $route.Header -}}
+			{{ printf "%q" $key }} : []string{
+				{{ printf "%q" $value }},
+			},
+			{{ end }}
+		},
+	},
+    {{ end }}
+}
+
+{{/*
+//
+// http responses
+//
+
+{{ range $index, $route := .Routes }}
+{{ if $route.Body -}}
+// {{ $route.Method }} {{ $route.Path }}
+var response{{ $index }} = `{{ $route.Body }}`
+{{ end }}
+{{ end }}
+*/}}

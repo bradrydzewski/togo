@@ -17,6 +17,7 @@ func main() {
 		ddlCommand,
 		sqlCommand,
 		httpCommand,
+		httptestCommand,
 		tmplCommand,
 		i18nCommand,
 	}
