@@ -17,7 +17,9 @@ func router(w http.ResponseWriter, r *http.Request) {
 	for _, route := range routes {
 		if route.Method == r.Method && route.Path == r.URL.Path {
 			w.WriteHeader(route.Status)
-			route.Header.Write(w)
+			for k, v := range route.Header {
+				w.Header().Set(k, v)
+			}
 			io.WriteString(w, route.Body)
 			break
 		}
@@ -29,7 +31,7 @@ var routes = []struct {
 	Path   string
 	Body   string
 	Status int
-	Header http.Header
+	Header map[string]string
 }{
     {{ range $index, $route := .Routes }}
 	// {{ $route.Method }} {{ $route.Path }}
@@ -40,11 +42,9 @@ var routes = []struct {
 		{{ if $route.Body -}}
 		Body:   {{ printf "%q" $route.Body }},
 		{{ end -}}
-		Header: map[string][]string{
+		Header: map[string]string{
 			{{ range $key, $value := $route.Header -}}
-			{{ printf "%q" $key }} : []string{
-				{{ printf "%q" $value }},
-			},
+			{{ printf "%q" $key }} : {{ printf "%q" $value }},
 			{{ end }}
 		},
 	},
