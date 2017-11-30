@@ -24,7 +24,7 @@ var files = []struct {
 
 func init() {
 	for _, file := range files {
-		i18n.ParseTranslationFileBytes(file.Name, []byte(file.data))
+		i18n.ParseTranslationFileBytes(file.name, []byte(file.data))
 	}
 }
 
