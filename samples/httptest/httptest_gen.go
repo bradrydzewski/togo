@@ -19,10 +19,10 @@ func router(w http.ResponseWriter, r *http.Request) {
 	}
 	for _, route := range routes {
 		if route.Method == r.Method && route.Path == r.URL.Path {
-			w.WriteHeader(route.Status)
 			for k, v := range route.Header {
 				w.Header().Set(k, v)
 			}
+			w.WriteHeader(route.Status)
 			io.WriteString(w, route.Body)
 			break
 		}

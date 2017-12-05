@@ -24,9 +24,10 @@ func router(w http.ResponseWriter, r *http.Request) {
 			}
 			w.WriteHeader(route.Status)
 			io.WriteString(w, route.Body)
-			break
+			return
 		}
 	}
+	w.WriteHeader(404)
 }
 
 var routes = []struct {
