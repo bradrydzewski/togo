@@ -14,6 +14,9 @@ func NewServer() *httptest.Server {
 }
 
 func router(w http.ResponseWriter, r *http.Request) {
+	if len(r.URL.RawPath) != 0 {
+		r.URL.Path = r.URL.RawPath
+	}
 	if len(r.URL.RawQuery) != 0 {
 		r.URL.Path = r.URL.Path + "?" + r.URL.RawQuery
 	}
