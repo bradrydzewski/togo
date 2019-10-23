@@ -141,7 +141,7 @@ var files = map[string]file{
 		FileInfo: &fileInfo{
 			name:    "padstart.js",
 			size:    577,
-			modTime: time.Unix(1500181749, 0),
+			modTime: time.Unix(1571842233, 0),
 		},
 	},
 	"/leftpad.js": {
@@ -149,7 +149,7 @@ var files = map[string]file{
 		FileInfo: &fileInfo{
 			name:    "leftpad.js",
 			size:    288,
-			modTime: time.Unix(1500174523, 0),
+			modTime: time.Unix(1571842233, 0),
 		},
 	},
 }
