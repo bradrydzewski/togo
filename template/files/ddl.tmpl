@@ -104,7 +104,7 @@ func info(message string, params ...interface{}) {
 var migrationTableCreate = `
 CREATE TABLE IF NOT EXISTS migrations (
  name VARCHAR(255)
-,UNIQUE(name)
+,PRIMARY KEY (name)
 )
 `
 
