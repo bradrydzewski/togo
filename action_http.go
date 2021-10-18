@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/bmatcuk/doublestar"
+	"github.com/bmatcuk/doublestar/v4"
 	"github.com/urfave/cli"
 
 	"github.com/bradrydzewski/togo/template"
@@ -68,7 +68,7 @@ func httpAction(c *cli.Context) error {
 		pattern = c.String("input")
 	}
 
-	matches, err := doublestar.Glob(pattern)
+	matches, err := doublestar.Glob(os.DirFS("."), pattern)
 	if err != nil {
 		return err
 	}

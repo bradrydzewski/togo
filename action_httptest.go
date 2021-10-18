@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bmatcuk/doublestar"
+	"github.com/bmatcuk/doublestar/v4"
 	"github.com/urfave/cli"
 
 	"github.com/bradrydzewski/togo/template"
@@ -61,8 +61,7 @@ func httptestAction(c *cli.Context) error {
 	if pattern == "" {
 		pattern = c.String("input")
 	}
-
-	matches, err := doublestar.Glob(pattern)
+	matches, err := doublestar.Glob(os.DirFS("."), pattern)
 	if err != nil {
 		return err
 	}
